@@ -29,3 +29,27 @@ jobs:
             dist/*.zip
             dist/*.sha256
           generate_release_notes: true
+
+  # Bumps Casks/to-review.rb in ya-makariy/homebrew-tap. Needs a fine-grained PAT with
+  # "Contents: read and write" on that repo, stored as the TAP_GITHUB_TOKEN secret.
+  update-tap:
+    needs: build
+    runs-on: ubuntu-latest
+    if: ${{ vars.TAP_REPO != '' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ vars.TAP_REPO }}
+          token: ${{ secrets.TAP_GITHUB_TOKEN }}
+
+      - name: Bump cask version and sha256
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          VERSION="${TAG#v}"
+          URL="https://github.com/${GITHUB_REPOSITORY}/releases/download/v${VERSION}/ToReview-${VERSION}.zip"
+          SHA="$(curl -fsSL "$URL" | shasum -a 256 | cut -d' ' -f1)"
+          sed -i -E "s/^(  version ).*/\1\"${VERSION}\"/; s/^(  sha256 ).*/\1\"${SHA}\"/" Casks/to-review.rb
+          git config user.name "Makarii Balashov"
+          git config user.email "me@ya-makariy.com"
+          git commit -am "to-review ${VERSION}" && git push

@@ -22,10 +22,12 @@ Requires **macOS 26 Tahoe** or later.
 ### Homebrew (coming soon)
 
 ```sh
-brew install --cask --no-quarantine ya-makariy/tap/to-review
+brew install --cask ya-makariy/tap/to-review
 ```
 
-`--no-quarantine` is required because the app is not notarized (see [Signing](#signing)).
+Use the fully qualified name: Homebrew 6+ only trusts third-party taps when you install
+an item from them explicitly. The app is not notarized, so macOS blocks the first launch
+once — see [Signing](#signing).
 
 ### Build from source
 
@@ -90,8 +92,12 @@ Outgoing PRs are everything you authored that is still open, drafts included.
 
 The project ships **ad-hoc signed** (no Apple Developer Program membership yet). Consequences:
 
-- Gatekeeper refuses to open a downloaded build until the quarantine flag is removed
-  (`brew --no-quarantine`, or `xattr -d com.apple.quarantine ToReview.app`).
+- Gatekeeper blocks the first launch of a downloaded build. Approve it once (open the app,
+  dismiss the dialog, then System Settings → Privacy & Security → *Open Anyway*), or remove
+  the quarantine flag: `xattr -dr com.apple.quarantine /Applications/ToReview.app`.
+  Homebrew removed `--no-quarantine` in 6.0, so there is no install-time shortcut.
+  Upgrades via `brew upgrade` carry the approval forward because every build is signed with
+  the same designated requirement.
 - Keychain may ask for access after you install a new build. Choose *Always Allow*.
 
 Everything works the same once the app is running. A notarized build is on the roadmap.
