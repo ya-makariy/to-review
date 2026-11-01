@@ -2,7 +2,7 @@
 # the release workflow bumps version/sha256 there automatically.
 cask "to-review" do
   version "0.1.0"
-  sha256 "REPLACE_WITH_SHA256_FROM_RELEASE"
+  sha256 "674d4af2d9e322d6675bf023d93892c232b0af4e3efc52f4628b71474dd96db6"
 
   url "https://github.com/ya-makariy/to-review/releases/download/v#{version}/ToReview-#{version}.zip"
   name "ToReview"

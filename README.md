@@ -19,7 +19,7 @@ Requires **macOS 26 Tahoe** or later.
 
 ## Install
 
-### Homebrew (coming soon)
+### Homebrew
 
 ```sh
 brew install --cask ya-makariy/tap/to-review
