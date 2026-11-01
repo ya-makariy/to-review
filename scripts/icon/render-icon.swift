@@ -1,10 +1,16 @@
-// Renders the app icon: a Tahoe-style squircle with a blue→indigo gradient,
-// a white git-merge glyph and a red "new review" dot.
+// Renders the app icon: a Tahoe-style graphite squircle with a white "PR" monogram
+// in SF Rounded and a bright red "new review" dot.
 // Usage: swift scripts/icon/render-icon.swift <output-dir>
 import AppKit
 
 let outDir = URL(fileURLWithPath: CommandLine.arguments.count > 1 ? CommandLine.arguments[1] : ".")
 try? FileManager.default.createDirectory(at: outDir, withIntermediateDirectories: true)
+
+func rgb(_ r: CGFloat, _ g: CGFloat, _ b: CGFloat) -> NSColor { NSColor(calibratedRed: r, green: g, blue: b, alpha: 1) }
+
+func circle(_ p: CGPoint, _ r: CGFloat) -> NSBezierPath {
+    NSBezierPath(ovalIn: CGRect(x: p.x - r, y: p.y - r, width: r * 2, height: r * 2))
+}
 
 func render(size: CGFloat) -> NSImage {
     let image = NSImage(size: NSSize(width: size, height: size))
@@ -14,84 +20,53 @@ func render(size: CGFloat) -> NSImage {
     // macOS icon grid: the squircle occupies ~82% of the canvas.
     let inset = size * 0.09
     let rect = CGRect(x: inset, y: inset, width: size - inset * 2, height: size - inset * 2)
-    let radius = rect.width * 0.225
-    let squircle = NSBezierPath(roundedRect: rect, xRadius: radius, yRadius: radius)
+    let s = rect.width
+    let cx = rect.midX, cy = rect.midY
+    let squircle = NSBezierPath(roundedRect: rect, xRadius: s * 0.225, yRadius: s * 0.225)
 
     // Drop shadow
     ctx.saveGState()
     ctx.setShadow(offset: CGSize(width: 0, height: -size * 0.012), blur: size * 0.03, color: NSColor.black.withAlphaComponent(0.35).cgColor)
-    NSColor(calibratedRed: 0.20, green: 0.36, blue: 0.95, alpha: 1).setFill()
+    rgb(0.16, 0.17, 0.20).setFill()
     squircle.fill()
     ctx.restoreGState()
 
-    // Gradient body
+    // Graphite gradient + soft top highlight (glass feel)
     squircle.addClip()
-    let gradient = NSGradient(colors: [
-        NSColor(calibratedRed: 0.30, green: 0.62, blue: 1.00, alpha: 1),
-        NSColor(calibratedRed: 0.22, green: 0.36, blue: 0.96, alpha: 1),
-        NSColor(calibratedRed: 0.33, green: 0.22, blue: 0.80, alpha: 1),
-    ])!
-    gradient.draw(in: rect, angle: -70)
-
-    // Soft highlight at the top (glass feel)
-    let highlight = NSGradient(colorsAndLocations:
+    NSGradient(colors: [rgb(0.27, 0.29, 0.33), rgb(0.16, 0.17, 0.20), rgb(0.09, 0.10, 0.12)])!.draw(in: rect, angle: -70)
+    NSGradient(colorsAndLocations:
         (NSColor.white.withAlphaComponent(0), 0.0),
         (NSColor.white.withAlphaComponent(0), 0.45),
-        (NSColor.white.withAlphaComponent(0.26), 1.0))!
-    highlight.draw(in: rect, angle: 90)
+        (NSColor.white.withAlphaComponent(0.18), 1.0))!.draw(in: rect, angle: 90)
 
-    // Merge glyph: two branch nodes joining into one
-    let s = rect.width
-    let line = s * 0.075
-    let nodeR = s * 0.085
-    let cx = rect.midX, cy = rect.midY
-    let leftX = cx - s * 0.17
-    let topY = cy + s * 0.25
-    let bottomY = cy - s * 0.25
-    let rightX = cx + s * 0.17
-    let rightY = cy + s * 0.12
-
-    let path = NSBezierPath()
-    path.lineWidth = line
-    path.lineCapStyle = .round
-    path.lineJoinStyle = .round
-    // main trunk
-    path.move(to: CGPoint(x: leftX, y: topY))
-    path.line(to: CGPoint(x: leftX, y: bottomY))
-    // branch curving in from the right node
-    path.move(to: CGPoint(x: rightX, y: rightY))
-    path.curve(to: CGPoint(x: leftX, y: bottomY + s * 0.02),
-               controlPoint1: CGPoint(x: rightX, y: cy - s * 0.10),
-               controlPoint2: CGPoint(x: leftX, y: cy - s * 0.02))
-
+    // "PR" monogram
+    let base = NSFont.systemFont(ofSize: s * 0.46, weight: .heavy)
+    let font = NSFont(descriptor: base.fontDescriptor.withDesign(.rounded) ?? base.fontDescriptor, size: s * 0.46) ?? base
+    let text = NSAttributedString(string: "PR", attributes: [.font: font, .foregroundColor: NSColor.white, .kern: -s * 0.02])
+    let tsize = text.size()
     ctx.saveGState()
-    ctx.setShadow(offset: CGSize(width: 0, height: -s * 0.01), blur: s * 0.03, color: NSColor.black.withAlphaComponent(0.25).cgColor)
-    NSColor.white.setStroke()
-    path.stroke()
-    NSColor.white.setFill()
-    for p in [CGPoint(x: leftX, y: topY), CGPoint(x: leftX, y: bottomY), CGPoint(x: rightX, y: rightY)] {
-        NSBezierPath(ovalIn: CGRect(x: p.x - nodeR, y: p.y - nodeR, width: nodeR * 2, height: nodeR * 2)).fill()
-    }
+    ctx.setShadow(offset: CGSize(width: 0, height: -s * 0.01), blur: s * 0.03, color: NSColor.black.withAlphaComponent(0.35).cgColor)
+    text.draw(at: CGPoint(x: cx - tsize.width / 2, y: cy - tsize.height / 2 - s * 0.01))
     ctx.restoreGState()
 
-    // Notification dot
-    let dotR = s * 0.075
-    let dot = CGPoint(x: rect.maxX - s * 0.20, y: rect.maxY - s * 0.20)
+    // Notification dot — vivid red, white ring
+    let dotR = s * 0.06
+    let dot = CGPoint(x: cx + tsize.width / 2 + s * 0.02, y: cy + tsize.height * 0.30)
     ctx.saveGState()
-    ctx.setShadow(offset: .zero, blur: s * 0.02, color: NSColor.black.withAlphaComponent(0.3).cgColor)
-    NSColor(calibratedRed: 1.0, green: 0.27, blue: 0.23, alpha: 1).setFill()
-    NSBezierPath(ovalIn: CGRect(x: dot.x - dotR, y: dot.y - dotR, width: dotR * 2, height: dotR * 2)).fill()
+    ctx.setShadow(offset: .zero, blur: s * 0.02, color: NSColor.black.withAlphaComponent(0.35).cgColor)
+    rgb(1.0, 0.18, 0.16).setFill()
+    circle(dot, dotR).fill()
     ctx.restoreGState()
-    NSColor.white.withAlphaComponent(0.9).setStroke()
-    let ring = NSBezierPath(ovalIn: CGRect(x: dot.x - dotR, y: dot.y - dotR, width: dotR * 2, height: dotR * 2))
+    let ring = circle(dot, dotR)
     ring.lineWidth = s * 0.018
+    NSColor.white.withAlphaComponent(0.95).setStroke()
     ring.stroke()
 
     image.unlockFocus()
     return image
 }
 
-func save(_ image: NSImage, pixels: Int, name: String) {
+func save(pixels: Int, name: String) {
     let rep = NSBitmapImageRep(bitmapDataPlanes: nil, pixelsWide: pixels, pixelsHigh: pixels, bitsPerSample: 8,
                                samplesPerPixel: 4, hasAlpha: true, isPlanar: false, colorSpaceName: .deviceRGB,
                                bytesPerRow: 0, bitsPerPixel: 0)!
@@ -100,12 +75,10 @@ func save(_ image: NSImage, pixels: Int, name: String) {
     NSGraphicsContext.current = NSGraphicsContext(bitmapImageRep: rep)
     render(size: CGFloat(pixels)).draw(in: NSRect(x: 0, y: 0, width: pixels, height: pixels))
     NSGraphicsContext.restoreGraphicsState()
-    let data = rep.representation(using: .png, properties: [:])!
-    try! data.write(to: outDir.appendingPathComponent(name))
+    try! rep.representation(using: .png, properties: [:])!.write(to: outDir.appendingPathComponent(name))
 }
 
-let master = render(size: 1024)
 for (pt, scale) in [(16, 1), (16, 2), (32, 1), (32, 2), (128, 1), (128, 2), (256, 1), (256, 2), (512, 1), (512, 2)] {
-    save(master, pixels: pt * scale, name: "icon_\(pt)x\(pt)\(scale == 2 ? "@2x" : "").png")
+    save(pixels: pt * scale, name: "icon_\(pt)x\(pt)\(scale == 2 ? "@2x" : "").png")
 }
 print("Icons written to \(outDir.path)")

@@ -12,6 +12,38 @@ final class WindowManager: NSObject {
 
     init(model: AppModel) {
         self.model = model
+        super.init()
+        NotificationCenter.default.addObserver(self, selector: #selector(windowWillClose(_:)), name: NSWindow.willCloseNotification, object: nil)
+    }
+
+    // MARK: Activation policy
+    //
+    // An LSUIElement app has no menu bar of its own, so while one of our windows is open
+    // we switch to `.regular` (menu bar + Dock icon) and go back to `.accessory` when the
+    // last window closes, otherwise the previous app's menu stays visible.
+
+    private var ownWindows: [NSWindow] { [mainWindow, settingsWindow].compactMap { $0 } }
+
+    private func becomeRegular() {
+        if NSApp.activationPolicy() != .regular {
+            NSApp.setActivationPolicy(.regular)
+        }
+        NSApp.activate()
+    }
+
+    @objc private func windowWillClose(_ notification: Notification) {
+        guard let closing = notification.object as? NSWindow, ownWindows.contains(closing) else { return }
+        // Other own windows still visible? Keep the menu bar.
+        let remaining = ownWindows.filter { $0 !== closing && $0.isVisible }
+        if remaining.isEmpty {
+            // Sheets attached to the closing window report through the same notification
+            // slightly later; defer so the policy flips after the window is really gone.
+            DispatchQueue.main.async {
+                if self.ownWindows.allSatisfy({ !$0.isVisible }) {
+                    NSApp.setActivationPolicy(.accessory)
+                }
+            }
+        }
     }
 
     func showMain() {
@@ -32,7 +64,7 @@ final class WindowManager: NSObject {
             mainWindow = window
         }
         model.markAllSeen()
-        NSApp.activate()
+        becomeRegular()
         mainWindow?.makeKeyAndOrderFront(nil)
     }
 
@@ -57,7 +89,7 @@ final class WindowManager: NSObject {
             window.setFrameAutosaveName("SettingsWindow")
             settingsWindow = window
         }
-        NSApp.activate()
+        becomeRegular()
         settingsWindow?.makeKeyAndOrderFront(nil)
     }
 
