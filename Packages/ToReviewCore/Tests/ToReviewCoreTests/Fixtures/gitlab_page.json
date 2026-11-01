@@ -1,0 +1,27 @@
+{
+  "currentUser": {
+    "items": {
+      "pageInfo": { "hasNextPage": false, "endCursor": null },
+      "nodes": [
+        {
+          "iid": "12", "title": "Fix pipeline cache", "webUrl": "https://gitlab.example.com/platform/infra/-/merge_requests/12",
+          "draft": false, "createdAt": "2026-10-30T09:00:00+00:00", "updatedAt": "2026-10-31T08:15:30.123Z",
+          "project": { "fullPath": "platform/infra" },
+          "author": { "username": "erin", "name": "Erin", "avatarUrl": "/uploads/-/system/user/avatar/3/avatar.png" },
+          "headPipeline": { "status": "RUNNING" },
+          "approvedBy": { "nodes": [ { "username": "frank" }, { "username": "me" } ] },
+          "userNotesCount": 4
+        },
+        {
+          "iid": "13", "title": "Draft: new feature", "webUrl": "https://gitlab.example.com/platform/infra/-/merge_requests/13",
+          "draft": true, "createdAt": "2026-10-30T09:00:00Z", "updatedAt": "2026-10-30T09:00:00Z",
+          "project": { "fullPath": "platform/infra" },
+          "author": { "username": "grace", "name": null, "avatarUrl": null },
+          "headPipeline": null,
+          "approvedBy": { "nodes": [] },
+          "userNotesCount": null
+        }
+      ]
+    }
+  }
+}

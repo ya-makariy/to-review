@@ -1,0 +1,54 @@
+{
+  "review": { "nodes": [
+    {
+      "number": 42, "title": "Add retry to sync engine", "url": "https://github.com/acme/widgets/pull/42",
+      "isDraft": false, "createdAt": "2026-10-30T09:00:00Z", "updatedAt": "2026-10-31T12:00:00Z",
+      "repository": { "nameWithOwner": "acme/widgets" },
+      "author": { "login": "alice", "avatarUrl": "https://avatars.githubusercontent.com/u/1", "name": "Alice" },
+      "latestOpinionatedReviews": { "nodes": [ { "state": "APPROVED", "author": { "login": "bob" } } ] },
+      "comments": { "totalCount": 3 }, "reviewThreads": { "totalCount": 2 },
+      "commits": { "nodes": [ { "commit": { "statusCheckRollup": { "state": "SUCCESS" } } } ] }
+    },
+    {
+      "number": 7, "title": "WIP: experiment", "url": "https://github.com/acme/widgets/pull/7",
+      "isDraft": true, "createdAt": "2026-10-30T09:00:00Z", "updatedAt": "2026-10-30T10:00:00Z",
+      "repository": { "nameWithOwner": "acme/widgets" },
+      "author": { "login": "carol", "avatarUrl": null, "name": null },
+      "latestOpinionatedReviews": { "nodes": [] },
+      "comments": { "totalCount": 0 }, "reviewThreads": { "totalCount": 0 },
+      "commits": { "nodes": [ { "commit": { "statusCheckRollup": null } } ] }
+    }
+  ] },
+  "assigned": { "nodes": [
+    {
+      "number": 42, "title": "Add retry to sync engine", "url": "https://github.com/acme/widgets/pull/42",
+      "isDraft": false, "createdAt": "2026-10-30T09:00:00Z", "updatedAt": "2026-10-31T12:00:00Z",
+      "repository": { "nameWithOwner": "acme/widgets" },
+      "author": { "login": "alice", "avatarUrl": "https://avatars.githubusercontent.com/u/1", "name": "Alice" },
+      "latestOpinionatedReviews": { "nodes": [ { "state": "APPROVED", "author": { "login": "bob" } } ] },
+      "comments": { "totalCount": 3 }, "reviewThreads": { "totalCount": 2 },
+      "commits": { "nodes": [ { "commit": { "statusCheckRollup": { "state": "SUCCESS" } } } ] }
+    },
+    {
+      "number": 99, "title": "Already approved by me", "url": "https://github.com/acme/api/pull/99",
+      "isDraft": false, "createdAt": "2026-10-29T09:00:00Z", "updatedAt": "2026-10-29T12:00:00Z",
+      "repository": { "nameWithOwner": "acme/api" },
+      "author": { "login": "dave", "avatarUrl": null, "name": "Dave" },
+      "latestOpinionatedReviews": { "nodes": [ { "state": "APPROVED", "author": { "login": "Me" } } ] },
+      "comments": { "totalCount": 1 }, "reviewThreads": { "totalCount": 0 },
+      "commits": { "nodes": [ { "commit": { "statusCheckRollup": { "state": "FAILURE" } } } ] }
+    }
+  ] },
+  "authored": { "nodes": [
+    {
+      "number": 5, "title": "My own PR", "url": "https://github.com/acme/api/pull/5",
+      "isDraft": false, "createdAt": "2026-10-28T09:00:00Z", "updatedAt": "2026-10-28T12:00:00Z",
+      "repository": { "nameWithOwner": "acme/api" },
+      "author": { "login": "me", "avatarUrl": null, "name": "Me" },
+      "latestOpinionatedReviews": { "nodes": [] },
+      "comments": { "totalCount": 0 }, "reviewThreads": { "totalCount": 0 },
+      "commits": { "nodes": [ { "commit": { "statusCheckRollup": { "state": "PENDING" } } } ] }
+    },
+    null
+  ] }
+}
