@@ -1,8 +1,8 @@
 # Homebrew cask. Lives in the tap repository (ya-makariy/homebrew-tap) as Casks/to-review.rb;
 # the release workflow bumps version/sha256 there automatically.
 cask "to-review" do
-  version "0.1.0"
-  sha256 "674d4af2d9e322d6675bf023d93892c232b0af4e3efc52f4628b71474dd96db6"
+  version "0.1.1"
+  sha256 "6239b5108f4897853f2167259ea8848dfe0eff49a06dee9871913aa4742c675d"
 
   url "https://github.com/ya-makariy/to-review/releases/download/v#{version}/ToReview-#{version}.zip"
   name "ToReview"
