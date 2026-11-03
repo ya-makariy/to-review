@@ -38,9 +38,18 @@ final class StatusItemController: NSObject, NSPopoverDelegate {
         }
 
         popover.behavior = .transient
-        popover.animates = true
+        // Off on purpose: on macOS 26 the zoom-in runs through a slow, glitchy animation path that
+        // leaves the popover scaled down for seconds. Without animation it lays out correctly.
+        popover.animates = false
         popover.delegate = self
-        popover.contentViewController = NSHostingController(rootView: PopoverView(windows: windows).environment(model))
+        let hosting = NSHostingController(rootView: PopoverView(windows: windows).environment(model))
+        // On macOS 26 the default sizing options do not drive `preferredContentSize`, so the popover
+        // keeps its default 320×320 `contentSize`. The first show still uses the fitting size, but any
+        // later relayout (e.g. the status item changing width after a sync) reapplies the stale 320 pt
+        // width: the 420 pt content gets centred in a 320 pt host and clipped on the left. Reporting the
+        // preferred size keeps `contentSize` in sync and also lets the popover fit its content height.
+        hosting.sizingOptions = [.preferredContentSize]
+        popover.contentViewController = hosting
     }
 
     @objc private func handleClick(_ sender: NSStatusBarButton) {
