@@ -171,6 +171,9 @@ struct MainView: View {
                 }
                 .padding(20)
             }
+            // The title and subtitle sit on top of the scroll view; the default soft edge
+            // leaves rows readable underneath them.
+            .scrollEdgeEffectStyle(.hard, for: .top)
             .navigationTitle(detailTitle)
             .navigationSubtitle(detailSubtitle)
         }
