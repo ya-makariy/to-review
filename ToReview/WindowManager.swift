@@ -53,7 +53,6 @@ final class WindowManager: NSObject {
             let window = NSWindow(contentViewController: controller)
             window.title = "ToReview"
             window.styleMask = [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView]
-            window.titlebarAppearsTransparent = true
             window.toolbarStyle = .unified
             window.setContentSize(NSSize(width: 980, height: 640))
             window.minSize = NSSize(width: 720, height: 420)
